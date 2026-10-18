@@ -33,4 +33,11 @@ import {
 
     declare completed: boolean;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+
+    declare description: string | null;
+
  }
