@@ -67,4 +67,11 @@ export class TasksService {
         return task;
     }
 
+    async findNull(){
+        return this.taskModel.findAll({
+            where: {
+                description: null
+            }
+        })
+    }
 }

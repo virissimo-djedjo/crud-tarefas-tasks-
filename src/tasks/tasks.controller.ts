@@ -12,6 +12,10 @@ export class TasksController {
         return this.tasksServices.findAll()
     }
 
+    @Get('sem-descricao')
+    finNull(){
+        return this.tasksServices.findNull();
+    }
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number){
         return this.tasksServices.findOne(id);
@@ -36,4 +40,5 @@ export class TasksController {
     delete(@Param('id', ParseIntPipe) id: number){
         return this.tasksServices.delete(id);
     }
+
 }
