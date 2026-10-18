@@ -34,7 +34,8 @@ export class TasksService {
     async create(createTaskDto: CreateTaskDto){
         return await this.taskModel.create({
             title: createTaskDto.title,
-            completed: createTaskDto.completed ?? false
+            completed: createTaskDto.completed ?? false,
+            description: createTaskDto.description ?? null
         });
     }
 
@@ -47,6 +48,10 @@ export class TasksService {
 
         if (updateTaskDto.completed !== undefined) {
             task.completed = updateTaskDto.completed;
+        }
+
+        if(updateTaskDto.description !== undefined){
+            task.description = updateTaskDto.description
         }
         
         await task.save()
