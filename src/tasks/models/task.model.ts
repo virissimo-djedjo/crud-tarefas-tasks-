@@ -6,7 +6,10 @@ import {
     PrimaryKey,
     AutoIncrement,
     Default,
+    ForeignKey,
+    BelongsTo
  } from "sequelize-typescript";
+import { User } from "../../users/models/user.model";
 
  @Table({
     tableName: 'tasks',
@@ -40,10 +43,14 @@ import {
 
     declare description: string | null;
 
+    @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,
         allowNull: true,
     })
 
     declare userId: number | null;
+
+    @BelongsTo(() => User)
+    declare user: User | null;
  }

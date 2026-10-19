@@ -1,5 +1,5 @@
-import { Model } from 'sequelize';
-import { AutoIncrement, Column, DataType, PrimaryKey, Table } from 'sequelize-typescript'
+import { AutoIncrement, Column, DataType, HasMany, Model, PrimaryKey, Table, } from 'sequelize-typescript'
+import { Task } from '../../tasks/models/task.model';
 
 @Table({
     tableName: 'users',
@@ -24,4 +24,7 @@ export class User extends Model{
         unique: true,
     })
     declare email: string;
+
+    @HasMany(() => Task)
+    declare tasks: Task[]
 }
