@@ -40,4 +40,10 @@ import {
 
     declare description: string | null;
 
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+
+    declare userId: number | null;
  }
