@@ -33,14 +33,12 @@ import { User } from "../../users/models/user.model";
         type: DataType.BOOLEAN,
         allowNull: false
     })
-
     declare completed: boolean;
 
     @Column({
         type: DataType.STRING,
         allowNull: true,
     })
-
     declare description: string | null;
 
     @ForeignKey(() => User)
@@ -48,7 +46,6 @@ import { User } from "../../users/models/user.model";
         type: DataType.INTEGER,
         allowNull: true,
     })
-
     declare userId: number | null;
 
     @BelongsTo(() => User)
