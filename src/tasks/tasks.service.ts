@@ -10,12 +10,13 @@ export class TasksService {
 
     constructor(@InjectModel(Task) private readonly taskModel: typeof Task){}
 
-    async findAll(){
+    async findAll(): Promise<Task[]>{
         const tasks = await this.taskModel.findAll();
-        
+
         if(tasks.length === 0){
             throw new NotFoundException('Nenhuma tarefa encontrada')
         }
+
         return tasks;
     }
 
