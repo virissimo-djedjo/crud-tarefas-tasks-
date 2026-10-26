@@ -1,78 +1,79 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTaskDto } from './dto/create-task.dto.ts/create-task.dto.ts';
-import { UpdateTaskDto } from './dto/upadate-task.dto.ts/upadate-task.dto.js';
+import { CreateTaskDto } from './dto/create-task.dto/create-task.dto.ts.js';
+import { UpdateTaskDto } from './dto/upadate-task.dto/upadate-task.dto.js';
 import { Task } from './models/task.model.js';
 import { InjectModel } from '@nestjs/sequelize';
 
-
 @Injectable()
 export class TasksService {
+  constructor(@InjectModel(Task) private readonly taskModel: typeof Task) {}
 
-    constructor(@InjectModel(Task) private readonly taskModel: typeof Task){}
+  async findAll(): Promise<Task[]> {
+    const tasks = await this.taskModel.findAll();
 
-    async findAll(): Promise<Task[]>{
-        const tasks = await this.taskModel.findAll();
-
-        if(tasks.length === 0){
-            throw new NotFoundException('Nenhuma tarefa encontrada')
-        }
-
-        return tasks;
+    if (tasks.length === 0) {
+      throw new NotFoundException('Nenhuma tarefa encontrada');
     }
 
-    async findOne(id: number){
-        const task = await this.taskModel.findByPk(id);
+    return tasks;
+  }
 
-        if(!task){
-            throw new NotFoundException(
-                `Tarefa com ID ${id} não encontrada`
-            );
-        }
+  async findOne(id: number) {
+    const task = await this.taskModel.findByPk(id);
 
-        return task;
+    if (!task) {
+      throw new NotFoundException(`Tarefa com ID ${id} não encontrada`);
     }
 
-    async create(createTaskDto: CreateTaskDto){
-        return await this.taskModel.create({
-            title: createTaskDto.title,
-            completed: createTaskDto.completed ?? false,
-            description: createTaskDto.description ?? null
-        });
+    return task;
+  }
+
+  async create(createTaskDto: CreateTaskDto) {
+    return await this.taskModel.create({
+      title: createTaskDto.title,
+      completed: createTaskDto.completed ?? false,
+      description: createTaskDto.description ?? null,
+      userId: createTaskDto.userId ?? null
+    });
+  }
+
+  async update(id: number, updateTaskDto: UpdateTaskDto) {
+    const task = await this.findOne(id);
+
+    if (updateTaskDto.title !== undefined) {
+      task.title = updateTaskDto.title;
     }
 
-    async update(id: number, updateTaskDto: UpdateTaskDto){
-        const task = await this.findOne(id);
-
-        if(updateTaskDto.title !== undefined){
-            task.title = updateTaskDto.title
-        }
-
-        if (updateTaskDto.completed !== undefined) {
-            task.completed = updateTaskDto.completed;
-        }
-
-        if(updateTaskDto.description !== undefined){
-            task.description = updateTaskDto.description
-        }
-        
-        await task.save()
-
-        return task;
+    if (updateTaskDto.completed !== undefined) {
+      task.completed = updateTaskDto.completed;
     }
 
-    async delete(id: number){
-        const task =  await this.findOne(id);
-
-        await task.destroy()
-
-        return task;
+    if (updateTaskDto.description !== undefined) {
+      task.description = updateTaskDto.description;
     }
 
-    async findNull(){
-        return this.taskModel.findAll({
-            where: {
-                description: null
-            }
-        })
+    if(updateTaskDto.userId !== undefined){
+        task.userId = updateTaskDto.userId;
     }
+
+    await task.save();
+
+    return task;
+  }
+
+  async delete(id: number) {
+    const task = await this.findOne(id);
+
+    await task.destroy();
+
+    return task;
+  }
+
+  async findNull() {
+    return this.taskModel.findAll({
+      where: {
+        description: null,
+      },
+    });
+  }
 }
