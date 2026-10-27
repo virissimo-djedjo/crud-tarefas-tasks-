@@ -3,13 +3,16 @@ import { CreateTaskDto } from './dto/create-task.dto/create-task.dto.ts.js';
 import { UpdateTaskDto } from './dto/upadate-task.dto/upadate-task.dto.js';
 import { Task } from './models/task.model.js';
 import { InjectModel } from '@nestjs/sequelize';
+import { User } from '../users/models/user.model.js';
 
 @Injectable()
 export class TasksService {
   constructor(@InjectModel(Task) private readonly taskModel: typeof Task) {}
 
   async findAll(): Promise<Task[]> {
-    const tasks = await this.taskModel.findAll();
+    const tasks = await this.taskModel.findAll({
+      include: User
+    });
 
     if (tasks.length === 0) {
       throw new NotFoundException('Nenhuma tarefa encontrada');
@@ -19,7 +22,9 @@ export class TasksService {
   }
 
   async findOne(id: number) {
-    const task = await this.taskModel.findByPk(id);
+    const task = await this.taskModel.findByPk(id, {
+      include: User
+    });
 
     if (!task) {
       throw new NotFoundException(`Tarefa com ID ${id} não encontrada`);

@@ -47,7 +47,7 @@ export class UsersService {
         const user = await this.findOne(id);
 
         await user.destroy();
-        
+
         return user;
     }
 }
