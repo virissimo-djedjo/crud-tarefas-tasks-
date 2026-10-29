@@ -7,7 +7,9 @@ import { User } from '../users/models/user.model.js';
 
 @Injectable()
 export class TasksService {
-  constructor(@InjectModel(Task) private readonly taskModel: typeof Task) {}
+  constructor(
+    @InjectModel(Task) private readonly taskModel: typeof Task, 
+    @InjectModel(User) private readonly userModel: typeof User,) {}
 
   async findAll(): Promise<Task[]> {
     const tasks = await this.taskModel.findAll({
@@ -58,12 +60,23 @@ export class TasksService {
     }
 
     if(updateTaskDto.userId !== undefined){
+      if(updateTaskDto.userId === null){
         task.userId = updateTaskDto.userId;
+      }else{
+        const user = await this.userModel.findByPk(updateTaskDto.userId);
+        
+        if(!user){
+          throw new NotFoundException(`Usuário com ${updateTaskDto.userId} não encontrado.`)
+        }
+
+        task.userId = user.id;
+      }
+
     }
 
     await task.save();
 
-    return task;
+    return await this.findOne(id);
   }
 
   async delete(id: number) {
