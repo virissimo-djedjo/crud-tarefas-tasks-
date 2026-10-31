@@ -3,6 +3,7 @@ import { User } from "./models/user.model";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { Task } from "../tasks/models/task.model";
 
 @Injectable()
 export class UsersService {
@@ -16,14 +17,18 @@ export class UsersService {
     }
 
     async findAll(){
-        return await this.userModel.findAll()
+        return await this.userModel.findAll({
+            include: [Task]
+        })
     }
 
     async findOne(id: number){
-        const user = await this.userModel.findByPk(id);
+        const user = await this.userModel.findByPk(id, {
+            include: [Task]
+        });
 
         if(!user){
-            throw new NotFoundException("Usuário não encontrado!");
+            throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
         }
         return user;
     }
