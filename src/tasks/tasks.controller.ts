@@ -26,6 +26,11 @@ export class TasksController {
     return this.tasksServices.trueTasks();
   }
 
+  @Get('pendentes')
+  falseTasks(){
+    return this.tasksServices.falseTasks();
+  }
+
   @Get('sem-descricao')
   finNull() {
     return this.tasksServices.findNull();

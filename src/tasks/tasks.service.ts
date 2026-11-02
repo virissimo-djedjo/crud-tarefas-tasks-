@@ -9,12 +9,13 @@ import { Op } from 'sequelize';
 @Injectable()
 export class TasksService {
   constructor(
-    @InjectModel(Task) private readonly taskModel: typeof Task, 
-    @InjectModel(User) private readonly userModel: typeof User,) {}
+    @InjectModel(Task) private readonly taskModel: typeof Task,
+    @InjectModel(User) private readonly userModel: typeof User,
+  ) {}
 
   async findAll(): Promise<Task[]> {
     const tasks = await this.taskModel.findAll({
-      include: User
+      include: User,
     });
 
     if (tasks.length === 0) {
@@ -26,7 +27,7 @@ export class TasksService {
 
   async findOne(id: number) {
     const task = await this.taskModel.findByPk(id, {
-      include: User
+      include: User,
     });
 
     if (!task) {
@@ -41,7 +42,7 @@ export class TasksService {
       title: createTaskDto.title,
       completed: createTaskDto.completed ?? false,
       description: createTaskDto.description ?? null,
-      userId: createTaskDto.userId ?? null
+      userId: createTaskDto.userId ?? null,
     });
   }
 
@@ -60,19 +61,20 @@ export class TasksService {
       task.description = updateTaskDto.description;
     }
 
-    if(updateTaskDto.userId !== undefined){
-      if(updateTaskDto.userId === null){
+    if (updateTaskDto.userId !== undefined) {
+      if (updateTaskDto.userId === null) {
         task.userId = updateTaskDto.userId;
-      }else{
+      } else {
         const user = await this.userModel.findByPk(updateTaskDto.userId);
-        
-        if(!user){
-          throw new NotFoundException(`Usuário com ${updateTaskDto.userId} não encontrado.`)
+
+        if (!user) {
+          throw new NotFoundException(
+            `Usuário com ${updateTaskDto.userId} não encontrado.`,
+          );
         }
 
         task.userId = user.id;
       }
-
     }
 
     await task.save();
@@ -96,16 +98,29 @@ export class TasksService {
     });
   }
 
-  async trueTasks(){
+  async trueTasks() {
     const concluidas = await this.taskModel.findAll({
       where: {
         completed: {
           [Op.eq]: true,
-        }
+        },
       },
       include: [User],
     });
 
     return concluidas;
+  }
+
+  async falseTasks() {
+    const pendentes = await this.taskModel.findAll({
+      where: {
+        completed: {
+          [Op.eq]: false,
+        },
+      },
+      include: [User],
+    });
+
+    return pendentes;
   }
 }
