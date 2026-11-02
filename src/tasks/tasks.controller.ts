@@ -15,16 +15,22 @@ import { UpdateTaskDto } from './dto/upadate-task.dto/upadate-task.dto';
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksServices: TasksService) {}
-
+  
   @Get()
   findAll() {
     return this.tasksServices.findAll();
+  }
+  
+  @Get('concluidas')
+  trueTasks(){
+    return this.tasksServices.trueTasks();
   }
 
   @Get('sem-descricao')
   finNull() {
     return this.tasksServices.findNull();
   }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.tasksServices.findOne(id);
@@ -47,4 +53,5 @@ export class TasksController {
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.tasksServices.delete(id);
   }
+
 }

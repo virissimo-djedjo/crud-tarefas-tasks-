@@ -4,6 +4,7 @@ import { UpdateTaskDto } from './dto/upadate-task.dto/upadate-task.dto.js';
 import { Task } from './models/task.model.js';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../users/models/user.model.js';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class TasksService {
@@ -93,5 +94,18 @@ export class TasksService {
         description: null,
       },
     });
+  }
+
+  async trueTasks(){
+    const concluidas = await this.taskModel.findAll({
+      where: {
+        completed: {
+          [Op.eq]: true,
+        }
+      },
+      include: [User],
+    });
+
+    return concluidas;
   }
 }
