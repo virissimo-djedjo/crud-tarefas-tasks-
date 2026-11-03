@@ -13,16 +13,27 @@ export class TasksService {
     @InjectModel(User) private readonly userModel: typeof User,
   ) {}
 
-  async findAll(): Promise<Task[]> {
-    const tasks = await this.taskModel.findAll({
-      include: User,
+  async findAll(page: number, limit: number) {
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await this.taskModel.findAndCountAll({
+      include: [User],
+      order: [['id', 'ASC']],
+      limit,
+      offset,
     });
 
-    if (tasks.length === 0) {
-      throw new NotFoundException('Nenhuma tarefa encontrada');
-    }
+    const totalPages = Math.ceil(count / limit);
 
-    return tasks;
+    return {
+      data: rows,
+      pagination: {
+        totalItems: count,
+        totalPages: totalPages,
+        currentPage: page,
+        itemsPerPage: limit,
+      },
+    };
   }
 
   async findOne(id: number) {

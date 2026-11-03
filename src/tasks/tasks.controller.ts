@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto/create-task.dto.ts';
@@ -15,19 +17,22 @@ import { UpdateTaskDto } from './dto/upadate-task.dto/upadate-task.dto';
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksServices: TasksService) {}
-  
+
   @Get()
-  findAll() {
-    return this.tasksServices.findAll();
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number
+  ) {
+    return this.tasksServices.findAll(page, limit);
   }
-  
+
   @Get('concluidas')
-  trueTasks(){
+  trueTasks() {
     return this.tasksServices.trueTasks();
   }
 
   @Get('pendentes')
-  falseTasks(){
+  falseTasks() {
     return this.tasksServices.falseTasks();
   }
 
@@ -58,5 +63,4 @@ export class TasksController {
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.tasksServices.delete(id);
   }
-
 }
